@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { useHistory } from "react-router"
+import { CurrentUser } from "../contexts/CurrentUser"
 
 function NewCommentForm({ place, onSubmit }) {
 
@@ -15,7 +16,6 @@ function NewCommentForm({ place, onSubmit }) {
             const response = await fetch(`http://localhost:5000/users`)
             const users = await response.json()
             setComment({ ...comment, authorId: users[0]?.userId})
-        
         }
         fetchData()
     }, [])
@@ -26,9 +26,14 @@ function NewCommentForm({ place, onSubmit }) {
         setComment({
             content: '',
             stars: 3,
-            rant: false,
-        
+            rant: false
         })
+    }
+
+    const { currentUser } = useContext(CurrentUser)
+
+    if(!currentUser) {
+        return <p>You must be logged in to leave a rant or a rave.</p>
     }
 
     return (
@@ -47,7 +52,6 @@ function NewCommentForm({ place, onSubmit }) {
                 </div>
             </div>
             <div className="row">
-               
                 <div className="form-group col-sm-4">
                     <label htmlFor="stars">Star Rating</label>
                     <input
